@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Contact";
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>3dBay</title>
+    <link rel="stylesheet" href="/Content/Styles.css" />
+</head>
+<body>
+
+    <div>
+        <div id="header">
+            <div class="title">3dBay - печать для вас!</div>
+            <div class="headbuttons">
+                <a href="@Url.Action("Index", "Home")" class="elements">Главная</a>
+                @{
+                    _3dBay2.Models.Repository.Repository repo = new _3dBay2.Models.Repository.Repository();
+                    if (Session != null && Session["UserID"] != null)
+                    {
+                        <a href="@Url.Action("MyPage", "Account")" class="elements">Моя страница</a>
+                        if (repo.GetUserByID((int)Session["UserID"]).IfCustomer)
+                        {
+                            <a href="/Pages/OrderCreation.aspx" class="register">Оформить заказ</a>
+                        }
+                        <a style="background-color: salmon; color: floralwhite;" href="/Account/LogOut">Выйти</a>
+}
+else
+{
+            <a href="/Pages/LoginPage.aspx">Войти</a>
+            <a href="/Pages/RegisterPage.aspx" class="register">Зарегестрироваться</a>;
+        }
+                }
+
+            </div>
+        </div>
+
+        <div id="maincontent">
+            <h2>И кто же мы?</h2>
+            <p>Мы - целый один человек, который делал это ради не-курсовой работы!</p>
+            <p>Если этот сайт популярен , значит, что-то определенно пошло не-так</p>
+            <h2>Но явно к лучшему!</h2>
+            <table>
+                <tr>
+                    <td><a href='https://vk.com/alexanin56'>Напишите мне!</a></td>
+                    <td><a href="mailto:theth1rt33nth@protonmail.com">Моя почта</a></td>
+                    <td><a href="tel:+7922845647">Мой телефон</a></td>
+                </tr>
+            </table>
+
+
+        </div>
+
+    </div>
+
+</body>
+</html>

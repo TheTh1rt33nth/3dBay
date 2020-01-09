@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "LoginSuccessful";
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>3dBay</title>
+    <link rel="stylesheet" href="/Content/Styles.css" />
+</head>
+<body>
+
+    <div>
+        <div id="header">
+            <div class="title">3dBay - печать для вас!</div>
+            <div class="headbuttons">
+                <a href="@Url.Action("Index", "Home")" class="elements">Главная</a>
+                @{ _3dBay2.Models.Repository.Repository repo = new _3dBay2.Models.Repository.Repository();
+                    if (Session != null && Session["UserID"] != null)
+                    {
+                        <a href="@Url.Action("MyPage", "Account")" class="elements">Моя страница</a>
+                        if (repo.GetUserByID((int)Session["UserID"]).IfCustomer)
+                        {
+                            <a href="/Pages/OrderCreation.aspx" class="register">Оформить заказ</a>
+                        }
+                        <a style="background-color: salmon; color: floralwhite;" href="/Account/LogOut">Выйти</a>
+}
+else
+{
+            <a href="/Pages/LoginPage.aspx">Войти</a>
+            <a href="/Pages/RegisterPage.aspx" class="register">Зарегестрироваться</a>;
+        }
+                }
+
+            </div>
+        </div>
+        <div id="categories">
+            <Bay:CategoryLinks runat="server" />
+        </div>
+        <div id="content">
+            <h2>Вы успешно вошли!</h2>
+            <p>@ViewBag.Message</p>
+            <table>
+                <tr>
+                    <td><a href='~/Pages/Listing.aspx'>Все пользователи</a></td>
+                    <td><a href='~/Pages/OrderListing.aspx'>Доска заказов</a></td>
+                </tr>
+            </table>
+
+
+        </div>
+        
+    </div>
+
+</body>
+</html>
+

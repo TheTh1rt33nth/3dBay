@@ -1,0 +1,44 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Bay.Master.cs" Inherits="_3dBay2.Pages.MasterPage" %>
+<%@ Register TagPrefix="Bay" TagName="CategoryLinks" Src="~/Controls/CategoryList.ascx" %>
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title>3dBay</title>
+    <link rel="stylesheet" href="/Content/Styles.css" />
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <div id="header">
+            <div class="title">3dBay - печать для вас!</div>
+            <div class="headbuttons"><a href="/Home/Index">Главная</a>
+            <% {
+                    _3dBay2.Models.Repository.Repository repo = new _3dBay2.Models.Repository.Repository();
+                    if (Session != null && Session["UserID"] != null)
+                    {
+                        Response.Write(String.Format(@"<a href='/Account/MyPage'>Моя страница</a>"));
+                        if(repo.GetUserByID((int)Session["UserID"]).IfCustomer)
+                        {
+                            Response.Write(String.Format(@"<a href='/Pages/OrderCreation.aspx' class='register'>Оформить заказ</a>"));
+                        }
+                    }
+                    else
+                    {
+                        Response.Write(String.Format(@"<a href='/Pages/LoginPage.aspx'>Войти</a>"));
+                        Response.Write(String.Format(@"<a href='/Pages/RegisterPage.aspx' class='register'>Зарегестрироваться</a>")); ;
+                    }
+                }%>
+            
+            </div>
+        </div>
+        <div id="categories">
+                <Bay:CategoryLinks runat="server" />
+            </div>
+        <div>
+            <asp:ContentPlaceHolder ID="bodyContent" runat="server" />
+        </div>
+    </div>
+    </form>
+</body>
+</html>

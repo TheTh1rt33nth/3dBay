@@ -1,0 +1,402 @@
+﻿@{
+    ViewBag.Title = "UserPage";
+
+    _3dBay2.Models.User user = (_3dBay2.Models.User)ViewBag.User;
+    _3dBay2.Models.Repository.Repository repo = new _3dBay2.Models.Repository.Repository();
+    string id=null;
+    if (Request.Params["id"]!=null)
+    { id = Request.Params["id"];
+        user = repo.GetUserByID(Convert.ToInt32(id));
+    }
+    if ((Session == null || Session["UserID"] == null))
+    {
+        Response.Redirect("/Home/LogNeeded");
+        return;
+    }
+    if ((Session == null || Session["UserID"] == null)&&(user==null))
+    {
+        Response.Redirect("/Home/Index");
+        return;
+    }
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>3dBay</title>
+    <link rel="stylesheet" href="/Content/Styles.css" />
+
+
+</head>
+<body>
+
+    <div>
+        <div id="header">
+            <div class="title">3dBay - печать для вас!</div>
+            <div class="headbuttons">
+                <a href="@Url.Action("Index", "Home")" class="elements">Главная</a>
+                @{
+
+                    if (Session != null && Session["UserID"] != null)
+                    {
+                        <a href="@Url.Action("MyPage", "Account")" class="elements">Моя страница</a>
+                        if (repo.GetUserByID((int)Session["UserID"]).IfCustomer)
+                        {
+                            <a href="~/Pages/OrderCreation.aspx.cs" class="register">Оформить заказ</a>
+                        }
+                        <a style="background-color: salmon; color: floralwhite;" href="/Account/LogOut">Выйти</a>
+}
+else
+{
+            <a href="/Pages/LoginPage.aspx">Войти</a>
+            <a href="/Pages/RegisterPage.aspx" class="register">Зарегестрироваться</a>;
+        }
+                }
+
+            </div>
+        </div>
+
+        <div id="person">
+            <table>
+                <tr class="greeting">
+                    <td>
+                        <div>
+                            @{
+                                if (Session != null && Session["UserID"] != null)
+                                {
+                                    if ((int)Session["UserID"] == user.ID)
+                                    {
+                                        <h2>Добро пожаловать домой,</h2>
+                                    }
+                                }
+                            }
+                            <h2>@user.Name</h2>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr class="greeting">
+                    <td><h1>Личная информация:</h1></td>
+                   
+                </tr>
+                <tr class="border_bottom">
+                    <td><p><b>Имя:</b></p></td>
+                    <td>
+                        @{
+                            if (user.RealName != null)
+                            {
+                                <p>@user.RealName</p>
+                            }
+                            else
+                            {
+                                <p>Не указано</p>
+                            }
+                        }
+                    </td>
+                </tr>
+                @if (user.IfMaker)
+                {
+                    <tr class="border_bottom">
+                        <td><p>Печатает на: </p></td>
+                        @if (user.Machine != null)
+                        {
+                            <td><p>@user.Machine</p></td>
+                        }
+                        else
+                        {
+                            <td><p>Неизвестном аппарате</p></td>
+                        }
+                    </tr>
+                    <tr class="border_bottom">
+                        <td><p><b>Рейтинг продавца:</b></p></td>
+                        <td class="stars">
+                            @{
+                                string rating = "";
+                                for (int i = 0; i < user.MakerRating; i++)
+                                {
+                                    <p class="star"><font color="gold">&#9733;</font></p>
+                                }
+                                for (int i = 0; i < 5 - user.MakerRating; i++)
+                                {
+                                    <p class="star"><font color="gold">&#9734;</font></p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="border_bottom">
+                        <td><p><b>Принятые заказы: </b></p></td>
+                        <td>
+                            <details>
+                                <summary>Осторожно: их может быть много!</summary>
+                                @{
+                                    <table class="order">
+                                        @foreach (_3dBay2.Models.Order order in repo.OrdersOfMaker(user.ID))
+                                        {
+
+                                        <tr>
+                                            <td><p>Заказ номер @order.OrderId </p></td>
+                                            <td><p>@order.Name </p></td>
+                                            <td><p>Ваша оценка: </p></td>
+                                            @if (repo.IsReviewExist(order.OrderId))
+                                            {
+                                                if (repo.GetReviewByID(order.OrderId).CustomerRating != null && (repo.GetReviewByID(order.OrderId).CustomerRating != 0))
+                                                {
+                                                    <td><p>@repo.GetReviewByID(order.OrderId).CustomerRating</p></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><p> Отсутсвует</p></td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td><p> Отзыва нет</p></td>
+                                            }
+                                            @if (user.ID == (int)Session["UserID"])
+                                            {
+                                                if (repo.IsReviewExist(order.OrderId))
+                                                {
+                                                    <td>
+                                                        <form method="post" action="/Reviews/CreateReview">
+                                                            <input type="hidden" name="IfMaker" value="false" />
+                                                            <input type="hidden" name="OrderId" value=@order.OrderId.ToString()>
+                                                            <input type="submit" value="Дополнить отзыв" />
+                                                        </form>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        <form method="post" action="/Reviews/CreateReview">
+                                                            <input type="hidden" name="IfMaker" value="false" />
+                                                            <input type="hidden" name="OrderId" value=@order.OrderId.ToString()>
+                                                            <input type="submit" value="Оставить отзыв" />
+                                                        </form>
+                                                    </td>
+                                                }
+
+                                            }
+                                        </tr>
+                                        }
+                                    </table>
+                                }
+                            </details>
+                        </td>
+                    </tr>
+                    <tr class="border_bottom">
+                        <td><p><b>Отзывы как о мэйкере: </b></p></td>
+                        <td>
+                            <details>
+                                <summary>Осторожно: их может быть много!</summary>
+                                @{
+                                <table class="review">
+                                    @foreach (_3dBay2.Models.Review review in repo.ReviewsOfMaker(user.ID))
+                                    {
+                                        if (review.MakerRating != null && review.MakerRating != 0)
+                                        {
+                                            <tr>
+                                                <td><p>Заказ номер @review.OrderId </p></td>
+                                                <td><p> Оценка: </p></td>
+                                                <td><p>@review.MakerRating</p></td>
+                                                <td><p> Комментарий: </p></td>
+                                                @if (review.Description != null)
+                                                {
+                                                    <td><p>@review.Description</p></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><p> Отсутсвует</p></td>
+                                                }
+
+                                            </tr>
+                                            }
+                                        }
+                                </table>
+                                }
+                            </details>
+                        </td>
+                    </tr>
+                }
+                @if (user.IfCustomer)
+                {
+                    <tr class="border_bottom">
+                        <td><p><b>Рейтинг покупателя:</b></p></td>
+                        <td class="stars">
+                            @{
+
+                                for (int i = 0; i < user.CustomerRating; i++)
+                                {
+                                    <p class="star"><font color="gold">&#9733;</font></p>
+                                }
+                                for (int i = 0; i < 5 - user.CustomerRating; i++)
+                                {
+                                    <p class="star"><font color="gold">&#9734;</font></p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="border_bottom">
+                        <td><p><b>Созданные заказы: </b></p></td>
+                        <td>
+                            <details>
+                                <summary>Осторожно: их может быть много!</summary>
+                                @{
+                                    <table>
+                                        @foreach (_3dBay2.Models.Order order in repo.OrdersOfCustomer(user.ID))
+                                        {
+
+                                        <tr>
+                                            <td><p>Заказ номер @order.OrderId </p></td>
+                                            <td><p>@order.Name </p></td>
+                                            <td><p> Ваша оценка: </p></td>
+                                            @if (repo.IsReviewExist(order.OrderId))
+                                            {
+                                                if (repo.GetReviewByID(order.OrderId).MakerRating != null && repo.GetReviewByID(order.OrderId).MakerRating != 0)
+                                                {
+                                                    <td><p>@repo.GetReviewByID(order.OrderId).MakerRating</p></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><p> Отсутсвует</p></td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td><p> Отзыва нет</p></td>
+                                            }
+                                            @if (user.ID == (int)Session["UserID"] && order.MakerId != 0 && order.MakerId != null)
+                                            {
+                                                if (repo.IsReviewExist(order.OrderId))
+                                                {
+                                                    <td>
+                                                        <form method="post" action="/Reviews/CreateReview">
+                                                            <input type="hidden" name="IfMaker" value="true" />
+                                                            <input type="hidden" name="OrderId" value=@order.OrderId.ToString()>
+                                                            <input type="submit" value="Дополнить отзыв" />
+                                                        </form>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        <form method="post" action="/Reviews/CreateReview">
+                                                            <input type="hidden" name="IfMaker" value="true" />
+                                                            <input type="hidden" name="OrderId" value=@order.OrderId.ToString()>
+                                                            <input type="submit" value="Оставить отзыв" />
+                                                        </form>
+                                                    </td>
+                                                }
+
+
+                                            }
+                                        </tr>
+                                        }
+                                    </table>
+                                }
+                            </details>
+                        </td>
+                    </tr>
+                    <tr class="border_bottom">
+                        <td><p><b>Отзывы как о покупателе: </b></p></td>
+                        <td>
+                            <details>
+                                <summary>Осторожно: их может быть много!</summary>
+                                @{
+                                <table class="review">
+                                    @foreach (_3dBay2.Models.Review review in repo.ReviewsOfCustomer(user.ID))
+                                    {
+
+                                        if (review.CustomerRating != null && review.CustomerRating != 0)
+                                        {
+                                            <tr>
+                                                <td><p>Заказ номер @review.OrderId </p></td>
+                                                <td><p> Оценка: </p></td>
+                                                <td><p>@review.CustomerRating</p></td>
+                                                <td><p> Комментарий: </p></td>
+                                                @if (review.Description != null)
+                                                {
+                                                    <td><p>@review.Description</p></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><p> Отсутсвует</p></td>
+                                                }
+
+                                            </tr>
+                                        }
+                                    
+                                    }
+                                </table>
+                                }
+                            </details>
+                        </td>
+                    </tr>
+                }
+                <tr class="border_bottom">
+                    <td><p><b>Расположение:</b></p></td>
+                    <td>
+                        @{
+                            if (user.MetroSt != null)
+                            {
+                                <p>@user.MetroSt</p>
+                            }
+                            else
+                            {
+                                <p>Не указано</p>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr class="border_bottom">
+                    <td><p><b>О себе:</b></p></td>
+                    <td>
+                        @{
+                            if (user.Descr != null)
+                            {
+                                <p>@user.Descr</p>
+                            }
+                            else
+                            {
+                                <p>Ничего :-(</p>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr class="border_bottom">
+                    <td><p><b>Контакты:</b></p></td>
+                    <td>
+                        @{
+                            if (user.Contacts != null)
+                            {
+                                <p>@user.Contacts</p>
+                            }
+                            else
+                            {
+                                <p>Пусто :-(</p>
+                            }
+                        }
+                    </td>
+                </tr>
+                @if (user.ID == (int)Session["UserId"])
+                {
+                    <tr class="border_bottom">
+                        <td><p><b>Редактировать свои данные:</b></p></td>
+                        <td>
+                            <a href="/Pages/EditPage.aspx" class="elements">Edit</a>
+                        </td>
+                    </tr>
+                }
+                @if (user.ID == (int)Session["UserId"])
+                {
+                    <tr class="border_bottom">
+                        <td><p><b>Сменить пароль:</b></p></td>
+                        <td>
+                            <a href="/Pages/ChangePassword.aspx" class="elements">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>
