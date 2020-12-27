@@ -1,4 +1,4 @@
-﻿body {
+body {
     font-family: Cambria, Georgia, "Times New Roman";
     margin: 0;
 }
@@ -296,6 +296,7 @@
     background-color: #353535;
     color: white;
 }
+
     .maincontent#content input[type=submit] {
         color: floralwhite;
         text-decoration: none;
@@ -430,3 +431,20 @@ div.pager {
     #categories a.selected:hover {
         background-color: #666;
     }
+.parsedItem a {
+        font-size: 1.3em;
+        color: floralwhite;
+        text-decoration: none;
+        padding: .5em .4em .5em .4em;
+        background-color: #00ade2;
+        height: 3em;   
+    }
+.parsedItem a:hover {
+    background-color: Silver;
+}
+
+.parsedItem a.selected {
+    background-color: #353535;
+    color: white;
+}
+

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 
 namespace _3dBay2.Models.Repository
@@ -47,6 +48,7 @@ namespace _3dBay2.Models.Repository
         public void CreateUser(User newUser)
         {
             context.Users.Add(newUser);
+        
             context.SaveChanges();
         }
         public void CreateReview(Review newReview)

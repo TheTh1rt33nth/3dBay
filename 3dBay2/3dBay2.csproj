@@ -48,6 +48,9 @@
     <Reference Include="GenericStl, Version=0.9.18.0, Culture=neutral, PublicKeyToken=3dc10763449940eb, processorArchitecture=MSIL">
       <HintPath>..\packages\GenericStl.0.9.18\lib\net40\GenericStl.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.11.29.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.29\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MoreLinq, Version=1.1.17511.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
       <HintPath>..\packages\morelinq.1.1.0\lib\net35\MoreLinq.dll</HintPath>
@@ -237,6 +240,13 @@
       <DependentUpon>Bay.Master</DependentUpon>
     </Compile>
     <Compile Include="Pages\Helpers\SessionHelper.cs" />
+    <Compile Include="Pages\News.aspx.cs">
+      <DependentUpon>News.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\News.aspx.designer.cs">
+      <DependentUpon>News.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ReviewCreation.aspx.cs">
       <DependentUpon>ReviewCreation.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -293,6 +303,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Pages\News.aspx" />
     <Content Include="Pages\ReviewCreation.aspx" />
     <Content Include="Pages\OrderListing.aspx" />
     <Content Include="Pages\Listing.aspx" />

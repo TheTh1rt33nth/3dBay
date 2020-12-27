@@ -21,7 +21,6 @@ namespace _3dBay2.Models
         public int MakerRating { get; set; }
         public int CustomerRating { get; set; }
         public string Contacts { get; set; }
-
         public string Email { get; set; }
     }
 }
